@@ -5,13 +5,418 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-        <changeSet id="1" author="my_name">
-            <createTable tableName="test_table">
-                <column name="test_id" type="int">
-                    <constraints primaryKey="true"/>
-                </column>
-                <column name="test_column" type="INT"/>
-            </createTable>
-        </changeSet>
+    <!-- ===============================
+         CHANGESET 1: Create Tables
+         =============================== -->
+    <changeSet id="001-create-lms-tables" author="developer">
+        <comment>Create tables for LMS system: courses, chapters, lessons</comment>
+
+        <!-- Create courses table -->
+        <createTable tableName="courses">
+            <column name="id" type="BIGSERIAL" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT"/>
+            <column name="created_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+
+        <!-- Create chapters table -->
+        <createTable tableName="chapters">
+            <column name="id" type="BIGSERIAL" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT"/>
+            <column name="order_number" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="course_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+
+        <!-- Create lessons table -->
+        <createTable tableName="lessons">
+            <column name="id" type="BIGSERIAL" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT"/>
+            <column name="content" type="TEXT"/>
+            <column name="order_number" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="chapter_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+
+        <!-- Add foreign key constraints -->
+        <addForeignKeyConstraint
+                baseTableName="chapters"
+                baseColumnNames="course_id"
+                constraintName="fk_chapters_course"
+                referencedTableName="courses"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint
+                baseTableName="lessons"
+                baseColumnNames="chapter_id"
+                constraintName="fk_lessons_chapter"
+                referencedTableName="chapters"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+    </changeSet>
+
+    <!-- ===============================
+         CHANGESET 2: Create Indexes
+         =============================== -->
+    <changeSet id="002-create-indexes" author="developer">
+        <comment>Create indexes for better performance</comment>
+
+        <createIndex tableName="chapters" indexName="idx_chapters_course_id">
+            <column name="course_id"/>
+        </createIndex>
+
+        <createIndex tableName="chapters" indexName="idx_chapters_order">
+            <column name="course_id"/>
+            <column name="order_number"/>
+        </createIndex>
+
+        <createIndex tableName="lessons" indexName="idx_lessons_chapter_id">
+            <column name="chapter_id"/>
+        </createIndex>
+
+        <createIndex tableName="lessons" indexName="idx_lessons_order">
+            <column name="chapter_id"/>
+            <column name="order_number"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- ===============================
+         CHANGESET 3: Insert Initial Courses
+         =============================== -->
+    <changeSet id="003-insert-initial-courses" author="developer">
+        <comment>Insert initial courses data</comment>
+
+        <insert tableName="courses">
+            <column name="name" value="Java Developer"/>
+            <column name="description" value="Полный курс по разработке на Java: от основ до продвинутых техник"/>
+        </insert>
+
+        <insert tableName="courses">
+            <column name="name" value="Python Developer"/>
+            <column name="description" value="Изучение Python с нуля: веб-разработка, анализ данных и машинное обучение"/>
+        </insert>
+
+        <insert tableName="courses">
+            <column name="name" value="Frontend Developer"/>
+            <column name="description" value="Современная frontend разработка: HTML, CSS, JavaScript, React"/>
+        </insert>
+
+        <insert tableName="courses">
+            <column name="name" value="DevOps Engineer"/>
+            <column name="description" value="Изучение DevOps практик: Docker, Kubernetes, CI/CD"/>
+        </insert>
+    </changeSet>
+
+    <!-- ===============================
+         CHANGESET 4: Insert Chapters for Java Course
+         =============================== -->
+    <changeSet id="004-insert-java-chapters" author="developer">
+        <comment>Insert chapters for Java Developer course</comment>
+
+        <insert tableName="chapters">
+            <column name="name" value="Основы Java"/>
+            <column name="description" value="Введение в язык программирования Java"/>
+            <column name="order_number" valueNumeric="1"/>
+            <column name="course_id" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="chapters">
+            <column name="name" value="Условные конструкции"/>
+            <column name="description" value="if-else условия и логические операторы"/>
+            <column name="order_number" valueNumeric="2"/>
+            <column name="course_id" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="chapters">
+            <column name="name" value="Циклы и массивы"/>
+            <column name="description" value="Работа с циклами и массивами в Java"/>
+            <column name="order_number" valueNumeric="3"/>
+            <column name="course_id" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="chapters">
+            <column name="name" value="Объектно-ориентированное программирование"/>
+            <column name="description" value="Классы, объекты, наследование, полиморфизм"/>
+            <column name="order_number" valueNumeric="4"/>
+            <column name="course_id" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="chapters">
+            <column name="name" value="Spring Framework"/>
+            <column name="description" value="Изучение Spring Boot и создание веб-приложений"/>
+            <column name="order_number" valueNumeric="5"/>
+            <column name="course_id" valueNumeric="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- ===============================
+         CHANGESET 5: Insert Chapters for Python Course
+         =============================== -->
+    <changeSet id="005-insert-python-chapters" author="developer">
+        <comment>Insert chapters for Python Developer course</comment>
+
+        <insert tableName="chapters">
+            <column name="name" value="Основы Python"/>
+            <column name="description" value="Синтаксис Python и базовые конструкции"/>
+            <column name="order_number" valueNumeric="1"/>
+            <column name="course_id" valueNumeric="2"/>
+        </insert>
+
+        <insert tableName="chapters">
+            <column name="name" value="Работа с данными"/>
+            <column name="description" value="Списки, словари, множества в Python"/>
+            <column name="order_number" valueNumeric="2"/>
+            <column name="course_id" valueNumeric="2"/>
+        </insert>
+
+        <insert tableName="chapters">
+            <column name="name" value="Функции и модули"/>
+            <column name="description" value="Создание функций и работа с модулями"/>
+            <column name="order_number" valueNumeric="3"/>
+            <column name="course_id" valueNumeric="2"/>
+        </insert>
+
+        <insert tableName="chapters">
+            <column name="name" value="Веб-разработка с Django"/>
+            <column name="description" value="Создание веб-приложений на Django"/>
+            <column name="order_number" valueNumeric="4"/>
+            <column name="course_id" valueNumeric="2"/>
+        </insert>
+
+        <insert tableName="chapters">
+            <column name="name" value="Анализ данных"/>
+            <column name="description" value="Pandas, NumPy для анализа данных"/>
+            <column name="order_number" valueNumeric="5"/>
+            <column name="course_id" valueNumeric="2"/>
+        </insert>
+    </changeSet>
+
+    <!-- ===============================
+         CHANGESET 6: Insert Chapters for Frontend Course
+         =============================== -->
+    <changeSet id="006-insert-frontend-chapters" author="developer">
+        <comment>Insert chapters for Frontend Developer course</comment>
+
+        <insert tableName="chapters">
+            <column name="name" value="HTML Основы"/>
+            <column name="description" value="Структура веб-страниц с HTML5"/>
+            <column name="order_number" valueNumeric="1"/>
+            <column name="course_id" valueNumeric="3"/>
+        </insert>
+
+        <insert tableName="chapters">
+            <column name="name" value="CSS Стилизация"/>
+            <column name="description" value="Современный CSS и Flexbox/Grid"/>
+            <column name="order_number" valueNumeric="2"/>
+            <column name="course_id" valueNumeric="3"/>
+        </insert>
+
+        <insert tableName="chapters">
+            <column name="name" value="JavaScript Основы"/>
+            <column name="description" value="Основы программирования на JavaScript"/>
+            <column name="order_number" valueNumeric="3"/>
+            <column name="course_id" valueNumeric="3"/>
+        </insert>
+
+        <insert tableName="chapters">
+            <column name="name" value="React Разработка"/>
+            <column name="description" value="Создание интерактивных приложений на React"/>
+            <column name="order_number" valueNumeric="4"/>
+            <column name="course_id" valueNumeric="3"/>
+        </insert>
+    </changeSet>
+
+    <!-- ===============================
+         CHANGESET 7: Insert Lessons for Java - Условные конструкции
+         =============================== -->
+    <changeSet id="007-insert-java-if-else-lessons" author="developer">
+        <comment>Insert lessons for Java if-else conditions chapter</comment>
+
+        <insert tableName="lessons">
+            <column name="name" value="Введение в if-else"/>
+            <column name="description" value="Базовые условные конструкции в Java"/>
+            <column name="content" value="В этом уроке мы изучим основы условных конструкций if-else в Java. Условные конструкции позволяют программе принимать решения на основе определенных условий.
+
+Пример:
+if (age >= 18) {
+    System.out.println(&quot;Вы совершеннолетний&quot;);
+} else {
+    System.out.println(&quot;Вы несовершеннолетний&quot;);
+}"/>
+            <column name="order_number" valueNumeric="1"/>
+            <column name="chapter_id" valueNumeric="2"/>
+        </insert>
+
+        <insert tableName="lessons">
+            <column name="name" value="Логические операторы"/>
+            <column name="description" value="Использование &amp;&amp; (И), || (ИЛИ), ! (НЕ)"/>
+            <column name="content" value="Логические операторы позволяют комбинировать несколько условий:
+
+&amp;&amp; (И) - все условия должны быть истинными
+|| (ИЛИ) - хотя бы одно условие должно быть истинным
+! (НЕ) - инвертирует условие
+
+Пример:
+if (age >= 18 &amp;&amp; hasLicense) {
+    System.out.println(&quot;Может водить машину&quot;);
+}"/>
+            <column name="order_number" valueNumeric="2"/>
+            <column name="chapter_id" valueNumeric="2"/>
+        </insert>
+
+        <insert tableName="lessons">
+            <column name="name" value="Тернарный оператор"/>
+            <column name="description" value="Краткая запись условий с помощью ?:"/>
+            <column name="content" value="Тернарный оператор - это краткая форма записи if-else:
+
+Синтаксис: условие ? значение_если_истина : значение_если_ложь
+
+Пример:
+String status = age >= 18 ? &quot;взрослый&quot; : &quot;ребенок&quot;;
+
+Это эквивалентно:
+String status;
+if (age >= 18) {
+    status = &quot;взрослый&quot;;
+} else {
+    status = &quot;ребенок&quot;;
+}"/>
+            <column name="order_number" valueNumeric="3"/>
+            <column name="chapter_id" valueNumeric="2"/>
+        </insert>
+    </changeSet>
+
+    <!-- ===============================
+         CHANGESET 8: Insert Lessons for Python - Основы
+         =============================== -->
+    <changeSet id="008-insert-python-basics-lessons" author="developer">
+        <comment>Insert lessons for Python basics chapter</comment>
+
+        <insert tableName="lessons">
+            <column name="name" value="Переменные и типы данных"/>
+            <column name="description" value="Изучение основных типов данных в Python"/>
+            <column name="content" value="В Python есть несколько основных типов данных:
+
+# Числа
+age = 25          # int (целое число)
+price = 99.99     # float (вещественное число)
+
+# Строки
+name = &quot;Иван&quot;     # str (строка)
+
+# Булевы значения
+is_active = True  # bool (логический тип)
+
+Python автоматически определяет тип переменной."/>
+            <column name="order_number" valueNumeric="1"/>
+            <column name="chapter_id" valueNumeric="6"/>
+        </insert>
+
+        <insert tableName="lessons">
+            <column name="name" value="Условные конструкции в Python"/>
+            <column name="description" value="if, elif, else в Python"/>
+            <column name="content" value="Условные конструкции в Python имеют простой синтаксис:
+
+age = 20
+
+if age &lt; 18:
+    print(&quot;Несовершеннолетний&quot;)
+elif age &lt; 65:
+    print(&quot;Трудоспособный возраст&quot;)
+else:
+    print(&quot;Пенсионер&quot;)
+
+Обратите внимание на отступы - это важно в Python!"/>
+            <column name="order_number" valueNumeric="2"/>
+            <column name="chapter_id" valueNumeric="6"/>
+        </insert>
+    </changeSet>
+
+    <!-- ===============================
+         CHANGESET 9: Insert Lessons for JavaScript
+         =============================== -->
+    <changeSet id="009-insert-javascript-lessons" author="developer">
+        <comment>Insert lessons for JavaScript basics chapter</comment>
+
+        <insert tableName="lessons">
+            <column name="name" value="Переменные в JavaScript"/>
+            <column name="description" value="let, const, var - объявление переменных"/>
+            <column name="content" value="В JavaScript есть три способа объявления переменных:
+
+// const - для констант (не изменяются)
+const PI = 3.14159;
+
+// let - для изменяемых переменных (блочная область видимости)
+let userName = &quot;Анна&quot;;
+
+// var - старый способ (функциональная область видимости)
+var age = 25;
+
+Рекомендуется использовать const и let."/>
+            <column name="order_number" valueNumeric="1"/>
+            <column name="chapter_id" valueNumeric="11"/>
+        </insert>
+
+        <insert tableName="lessons">
+            <column name="name" value="Условия в JavaScript"/>
+            <column name="description" value="if-else и switch конструкции"/>
+            <column name="content" value="Условные конструкции в JavaScript:
+
+// if-else
+if (score >= 90) {
+    grade = &quot;A&quot;;
+} else if (score >= 80) {
+    grade = &quot;B&quot;;
+} else {
+    grade = &quot;C&quot;;
+}
+
+// switch
+switch (day) {
+    case &quot;Monday&quot;:
+        console.log(&quot;Понедельник&quot;);
+        break;
+    case &quot;Tuesday&quot;:
+        console.log(&quot;Вторник&quot;);
+        break;
+    default:
+        console.log(&quot;Другой день&quot;);
+}"/>
+            <column name="order_number" valueNumeric="2"/>
+            <column name="chapter_id" valueNumeric="11"/>
+        </insert>
+    </changeSet>
 
 </databaseChangeLog>
