@@ -18,6 +18,9 @@ public interface ChapterRepository extends JpaRepository<Chapter, Long> {
     @Query("SELECT c FROM Chapter c WHERE c.course.id = :courseId ORDER BY c.order ASC")
     List<Chapter> findChaptersByCourseIdSorted(@Param("courseId") Long courseId);
 
-    @Query("SELECT c FROM Chapter c LEFT JOIN FETCH c.lessons WHERE c.course.id = :courseId ORDER BY c.order")
-    List<Chapter> findChaptersByCourseIdWithLessons(@Param("courseId") Long courseId);
+    List<Chapter> findByNameContainingIgnoreCase(String name);
+
+    boolean existsByCourseIdAndOrder(Long courseId, int order);
+
+    long countByCourseId(Long courseId);
 }

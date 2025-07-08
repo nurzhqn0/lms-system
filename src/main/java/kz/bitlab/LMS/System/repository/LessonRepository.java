@@ -20,4 +20,8 @@ public interface LessonRepository extends JpaRepository<Lesson, Long> {
 
     @Query("SELECT l FROM Lesson l WHERE l.chapter.course.id = :courseId")
     List<Lesson> findLessonsByCourseId(@Param("courseId") Long courseId);
+
+    List<Lesson> findByNameContainingIgnoreCase(String name);
+
+    long countByChapterId(Long chapterId);
 }

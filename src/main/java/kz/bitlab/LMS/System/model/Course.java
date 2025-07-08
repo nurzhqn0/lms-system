@@ -8,7 +8,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Getter
@@ -33,7 +32,4 @@ public class Course {
     @UpdateTimestamp
     @Column(name = "updated_time")
     private LocalDateTime updatedTime;
-
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Chapter> chapters;
 }

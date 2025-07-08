@@ -40,7 +40,4 @@ public class Chapter {
     @UpdateTimestamp
     @Column(name = "updated_time")
     private LocalDateTime updatedTime;
-
-    @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Lesson> lessons;
 }

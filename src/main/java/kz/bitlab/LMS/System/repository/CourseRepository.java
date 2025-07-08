@@ -14,10 +14,4 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     Optional<Course> findByName(String name);
 
     List<Course> findByNameContainingIgnoreCase(String name);
-
-    @Query("SELECT c FROM Course c LEFT JOIN FETCH c.chapters")
-    List<Course> findAllWithChapters();
-
-    @Query("SELECT c FROM Course c LEFT JOIN FETCH c.chapters ch LEFT JOIN FETCH ch.lessons WHERE c.id = :id")
-    Optional<Course> findByIdWithChaptersAndLessons(Long id);
 }
