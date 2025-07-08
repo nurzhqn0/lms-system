@@ -1,5 +1,6 @@
 package kz.bitlab.LMS.System.service;
 
+import kz.bitlab.LMS.System.exception.ChapterNotFoundException;
 import kz.bitlab.LMS.System.model.Chapter;
 import kz.bitlab.LMS.System.repository.ChapterRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class ChapterService {
 
     public Chapter findById(Long id) {
         return chapterRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Chapter not found with id: " + id));
+                .orElseThrow(() -> new ChapterNotFoundException(id));
     }
 
     public boolean existsById(Long id) {
@@ -53,7 +54,7 @@ public class ChapterService {
 
     public void deleteById(Long id) {
         if (!chapterRepository.existsById(id)) {
-            throw new RuntimeException("Chapter not found with id: " + id);
+            throw new ChapterNotFoundException(id);
         }
         chapterRepository.deleteById(id);
     }

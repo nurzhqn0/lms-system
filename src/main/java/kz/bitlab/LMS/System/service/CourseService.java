@@ -1,6 +1,7 @@
 // File: service/CourseService.java
 package kz.bitlab.LMS.System.service;
 
+import kz.bitlab.LMS.System.exception.CourseNotFoundException;
 import kz.bitlab.LMS.System.model.Course;
 import kz.bitlab.LMS.System.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,7 @@ public class CourseService {
 
     public void deleteById(Long id) {
         if (!courseRepository.existsById(id)) {
-            throw new RuntimeException("Course not found with id: " + id);
+            throw new CourseNotFoundException(id);
         }
         courseRepository.deleteById(id);
     }

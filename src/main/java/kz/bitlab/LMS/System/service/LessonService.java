@@ -1,5 +1,6 @@
 package kz.bitlab.LMS.System.service;
 
+import kz.bitlab.LMS.System.exception.LessonNotFoundException;
 import kz.bitlab.LMS.System.model.Lesson;
 import kz.bitlab.LMS.System.repository.LessonRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class LessonService {
 
     public Lesson findById(Long id) {
         return lessonRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Lesson not found with id: " + id));
+                .orElseThrow(() -> new LessonNotFoundException(id));
     }
 
     public boolean existsById(Long id) {
@@ -49,7 +50,7 @@ public class LessonService {
 
     public void deleteById(Long id) {
         if (!lessonRepository.existsById(id)) {
-            throw new RuntimeException("Lesson not found with id: " + id);
+            throw new LessonNotFoundException(id);
         }
         lessonRepository.deleteById(id);
     }
